@@ -1,45 +1,55 @@
-from coffeematon.coarse_grain import grain_coords
+from coffeematon.coarse_grain import coarse_grained
 
 import numpy as np
 
 
+def np_check_equal(actual: np.ndarray, expected: np.ndarray):
+    assert np.all(
+        actual == expected
+    ), f"Got:\n{actual}\nDiff:\n{np.abs(actual-expected)}"
+
+
 class TestGrain:
-    def test_grain_3_middle_odd(self):
-        """
-        |0|1|2|3|4|     |0|1|2|3|4|
-        |1|_|_|_|_|     |1|x|x|x|_|
-        |2|_|x|_|_| =>  |2|x|x|x|_|
-        |3|_|_|_|_|     |3|x|x|x|_|
-        |4|_|_|_|_|     |4|_|_|_|_|
-        """
-        assert grain_coords(2, 2, 3, 4, 4) == (1, 3, 1, 3)
+    def test_grain_3_bins_11(self):
+        fine = np.array(
+            [
+                [0, 1, 0, 0, 1],
+                [0, 1, 1, 0, 1],
+                [0, 1, 0, 1, 0],
+                [1, 0, 1, 1, 1],
+                [1, 0, 1, 0, 0],
+            ],
+            dtype=np.float32,
+        )
+        coarsed = coarse_grained(fine, maxval=1.0, grainsize=3, n_categories=11)
+        expected = np.array(
+            [
+                [0.3, 0.4, 0.4, 0.4, 0.7],
+                [0.3, 0.4, 0.6, 0.4, 0.6],
+                [0.4, 0.6, 0.7, 0.7, 0.7],
+                [0.6, 0.6, 0.6, 0.6, 0.4],
+                [0.7, 0.7, 0.4, 0.6, 0.3],
+            ]
+        )
+        np_check_equal(coarsed, expected)
 
-    def test_grain_3_middle_even(self):
-        """
-        |0|1|2|3|4|     |0|1|2|3|4|
-        |1|_|_|_|_|     |1|_|_|_|_|
-        |2|_|_|_|_| =>  |2|_|x|x|x|
-        |3|_|_|x|_|     |3|_|x|x|x|
-        |4|_|_|_|_|     |4|_|x|x|x|
-        """
-        assert grain_coords(3, 3, 3, 4, 4) == (2, 4, 2, 4)
+    def test_grain_3_bins_3(self):
+        fine = np.array(
+            [
+                [0, 1, 0, 0, 1],
+                [0, 1, 1, 0, 1],
+                [0, 1, 0, 1, 0],
+                [1, 0, 1, 1, 1],
+                [1, 0, 1, 0, 0],
+            ],
+            dtype=np.float32,
+        )
+        coarsed = coarse_grained(fine, maxval=1.0, grainsize=3, n_categories=3)
+        expected = 0.5 * np.ones_like(fine)
+        np_check_equal(coarsed, expected)
 
-    def test_grain_3_min_corner(self):
-        """
-        |0|1|2|3|4|     |x|x|x|3|4|
-        |1|x|_|_|_|     |x|x|x|_|_|
-        |2|_|_|_|_| =>  |x|x|x|_|_|
-        |3|_|_|_|_|     |3|_|_|_|_|
-        |4|_|_|_|_|     |4|_|_|_|_|
-        """
-        assert grain_coords(0, 0, 3, 4, 4) == (0, 1, 0, 1)
-
-    def test_grain_3_max_corner(self):
-        """
-        |0|1|2|3|4|     |0|1|2|3|4|
-        |1|_|_|_|_|     |1|_|_|_|_|
-        |2|_|_|_|_| =>  |2|_|_|_|_|
-        |3|_|_|_|_|     |3|_|_|x|x|
-        |4|_|_|_|x|     |4|_|_|x|x|
-        """
-        assert grain_coords(4, 4, 3, 4, 4) == (3, 4, 3, 4)
+    def test_grain_3_bins_3_ones(self):
+        fine = np.ones((5, 5), dtype=np.float32)
+        coarsed = coarse_grained(fine, maxval=1.0, grainsize=3, n_categories=3)
+        expected = np.ones((5, 5), dtype=np.float32)
+        np_check_equal(coarsed, expected)

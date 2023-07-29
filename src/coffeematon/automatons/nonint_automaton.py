@@ -3,19 +3,16 @@ from pathlib import Path
 import numpy as np
 import random
 
-from coffeematon.automaton import Automaton
+from coffeematon.automatons.automaton import Automaton, InitialStates
 
 
 class NonInteractingAutomaton(Automaton):
-    def __init__(self, n, metric):
-        Automaton.__init__(self, n, metric)
-        self.maxval = self.grainsize
-        if metric == "acg":
-            self.maxval = int(self.grainsize**0.5)
-        self.dir = Path("experiments") / "nonint" / str(n) / str(metric)
-        self.esttime *= 2
+    NAME = "Non-Interacting"
 
-    # Move the automaton one state ahead by switching two cells.
+    def __init__(self, n, initial_state):
+        Automaton.__init__(self, n, initial_state)
+        self.maxval = self.grainsize
+
     def next(self):
         new_cells = np.zeros((self.n, self.n))
         for x0 in range(self.n):
@@ -39,7 +36,8 @@ class NonInteractingAutomaton(Automaton):
                     new_cells[y1][x1] += 1
         self.cells = new_cells
 
-    # Return the estimated number of steps to convergence
-    # for the automaton.
     def timesteps(self):
-        return self.n**2 / 4
+        if self.initial_state is InitialStates.UPDOWN:
+            return self.n**2
+        if self.initial_state is InitialStates.CIRCULAR:
+            return 20 * self.n

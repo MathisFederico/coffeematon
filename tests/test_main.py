@@ -1,9 +1,17 @@
-from coffeematon.__main__ import data_for_n
+from coffeematon.__main__ import experiment_for_n
 
 
 def test_int():
-    data_for_n("acg", "int", 10)
+    experiment_for_n("int", 10)
 
 
 def test_nonint():
-    data_for_n("acg", "nonint", 10)
+    experiment_for_n("nonint", 10)
+
+
+def test_int_circular():
+    experiment_for_n("int", 10, init="circular")
+
+
+def test_nonint_circular():
+    experiment_for_n("nonint", 10, init="circular")
