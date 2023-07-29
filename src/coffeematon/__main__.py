@@ -11,11 +11,13 @@ import numpy
 from coffeematon.automatons.automaton import Automaton, Complexities, InitialStates
 from coffeematon.automatons.nonint_automaton import NonInteractingAutomaton
 from coffeematon.automatons.int_automaton import InteractingAutomaton
+from coffeematon.automatons.fluid_automaton import FluidAutomaton
 from coffeematon.generate_gifs import generate_gif
 
 AUTOMATONS: Dict[str, Automaton] = {
     "nonint": NonInteractingAutomaton,
     "int": InteractingAutomaton,
+    "fluid": FluidAutomaton,
 }
 
 
