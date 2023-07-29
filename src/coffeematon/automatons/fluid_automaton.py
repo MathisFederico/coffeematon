@@ -16,10 +16,12 @@ class FluidAutomaton(Automaton):
         self.velocity = (
             advect.semi_lagrangian(self.velocity, self.velocity, dt=1) + buoyancy_force
         )
-        self.velocity, _ = fluid.make_incompressible(self.velocity)
-        self.smoke_to_cells()
+        self.velocity, _ = fluid.make_incompressible(
+            self.velocity, solve=Solve(max_iterations=5000)
+        )
+        self._smoke_to_cells()
 
-    def smoke_to_cells(self):
+    def _smoke_to_cells(self):
         self.cells = np.array(self.smoke.data).transpose()[::-1]
 
     def set_initial_state(self):
@@ -56,7 +58,7 @@ class FluidAutomaton(Automaton):
         else:
             raise NotImplementedError()
         self.smoke += INFLOW
-        self.smoke_to_cells()
+        self._smoke_to_cells()
 
     def timesteps(self):
         return 5 * self.n
