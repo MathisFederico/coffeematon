@@ -39,4 +39,4 @@ class InteractingAutomaton(Automaton):
         if self.initial_state is InitialStates.UPDOWN:
             return 4000 * (self.n**2)
         if self.initial_state is InitialStates.CIRCULAR:
-            return 1000 * (self.n**2)
+            return 4000 * (self.n**2)

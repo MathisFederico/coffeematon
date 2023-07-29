@@ -36,10 +36,6 @@ def write_string(array):
 
 def save_image(array, filename, n):
     data = numpy.ravel(array)
-    if 2.0 in data:
-        scale = 127
-    else:
-        scale = 255
     image = Image.new("L", (n, n))
-    image.putdata(data, scale, 0)
+    image.putdata(data, 255, 0)
     image.save(filename)

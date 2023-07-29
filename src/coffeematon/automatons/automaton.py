@@ -46,7 +46,7 @@ class Automaton:
         self.esttime = self.timesteps()
         self.dir = Path("experiments") / self.initial_state.value / self.NAME / str(n)
         # Compute grain size
-        grainsize = round(0.2 * n)
+        grainsize = round(np.sqrt(n))
         if grainsize % 2 == 0:
             grainsize += 1
         self.grainsize = grainsize
@@ -82,7 +82,7 @@ class Automaton:
         n_steps = self.esttime
         loadbar = trange(n_steps, total=n_steps, desc="Simulating")
         for step in loadbar:
-            stepsize = n_steps // 1000
+            stepsize = n_steps // 400
             if (stepsize == 0) or (step % stepsize) == 0:
                 coarse = coarse_grained(self.cells, self.maxval, self.grainsize)
                 adj_coarse = adjusted_coarse_grained(
