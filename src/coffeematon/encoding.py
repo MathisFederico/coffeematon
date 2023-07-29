@@ -1,35 +1,33 @@
 """Tools to estimate the entropy and complexity of the cellular automaton."""
 
+
+import gzip
+import bz2
+import tempfile
+from enum import Enum
+from typing import Union
+
 import numpy
-import os
-import random
 from PIL import Image
 
 save_images = True
 
 
-def zip_array(array, compression="gzip"):
-    return zip_string(write_string(array), compression)
+class Compression(Enum):
+    BZIP = "bzip"
+    GZIP = "gzip"
 
 
-def zip_string(string, compression="gzip"):
-    if compression == "bzip":
-        return compressed_size(string, "bzip2", "bz2")
-    if compression == "gzip":
-        return compressed_size(string, "gzip", "gz")
-    if compression == "compress":
-        return compressed_size(string, "compress -f", "Z")
+def zip_array(array, compression: Compression = Compression.GZIP) -> int:
+    return zip_string(write_string(array), compression.value)
 
 
-def compressed_size(string, cmd, ext):
-    path = "temp" + str(random.randrange(1000))
-    f = open(path, "w")
-    f.write(string)
-    f.close()
-    os.system(cmd + " " + path)
-    size = os.path.getsize(path + "." + ext)
-    os.remove(path + "." + ext)
-    return size
+def zip_string(string: str, compression: Union[Compression, str]) -> int:
+    byte_string = bytearray(string, "ascii")
+    if Compression(compression) is Compression.GZIP:
+        return len(gzip.compress(byte_string))
+    if Compression(compression) is Compression.BZIP:
+        return len(bz2.compress(byte_string))
 
 
 def write_string(array):

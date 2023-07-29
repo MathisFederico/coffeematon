@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import numpy as np
 import random
 
@@ -10,7 +12,7 @@ class NonInteractingAutomaton(Automaton):
         self.maxval = self.grainsize
         if metric == "acg":
             self.maxval = int(self.grainsize**0.5)
-        self.dir = "nonint_%s_%d" % (metric, n)
+        self.dir = Path("experiments") / "nonint" / str(n) / str(metric)
         self.esttime *= 2
 
     # Move the automaton one state ahead by switching two cells.
@@ -36,7 +38,6 @@ class NonInteractingAutomaton(Automaton):
                     y1 = max(0, min(self.n - 1, y0 + yd))
                     new_cells[y1][x1] += 1
         self.cells = new_cells
-        self.i += 1
 
     # Return the estimated number of steps to convergence
     # for the automaton.

@@ -20,11 +20,11 @@ def data_for_n(metric, type, n):
     t2 = time()
 
     # Print and save statistics
-    f = open(a.dir + "/stats_" + str(n), "w")
-    f.write("x = " + str(a.x) + "\n")
-    f.write("complexities = " + str(a.complexities) + "\n")
-    f.write("entropies = " + str(a.entropies))
-    f.close()
+    with open(a.dir / f"stats_{n}", "w") as stats_file:
+        stats_file.write(f"x = {a.x}\n")
+        stats_file.write(f"complexities = {a.complexities}\n")
+        stats_file.write(f"entropies = {a.entropies}")
+
     # Generate and save plots
     typename = "Interacting"
     if type == "nonint":
@@ -36,13 +36,13 @@ def data_for_n(metric, type, n):
     plt.plot(a.x, a.complexities, "g-", label="Complexity")
     plt.plot(a.x, a.entropies, "b-", label="Entropy")
     plt.legend()
-    plt.savefig(a.dir + "/graph")
+    plt.savefig(a.dir / "graph")
     plt.close()
 
     print("Time for n=%d: %d sec." % (a.n, t2 - t1))
 
     # Return statistics
-    mix_time = a.i
+    mix_time = a.step
     emax_val = max(a.entropies)
     cmax_time = a.x[numpy.argmax(a.complexities)]
     cmax_val = max(a.complexities)
@@ -65,7 +65,7 @@ def data_for_range(metric, type, start, stop, step=1):
         cmax_times.append(cmax_time)
         cmax_vals.append(cmax_val)
     t2 = time()
-    print("Total time: %d sec." % (t2 - t1))
+    print(f"Total time: {t2 - t1:d} sec.")
 
     # Save statistics to file
     f = open("stats_%s_%s_%d_%d" % (type, metric, start, stop - step), "w")
@@ -78,8 +78,9 @@ def data_for_range(metric, type, start, stop, step=1):
 
 
 def main():
-    # data_for_n("acg", "int", 100)
+    data_for_n("acg", "int", 100)
     data_for_n("acg", "nonint", 100)
+
 
 if __name__ == "__main__":
     main()

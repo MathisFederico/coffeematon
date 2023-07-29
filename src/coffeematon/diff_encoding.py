@@ -1,5 +1,7 @@
 """Diff-based encoding"""
 
+from copy import deepcopy
+
 
 def generate_diff(fine, coarse):
     """Generate a diff between the fine-grained and coarse-grained arrays:
@@ -7,7 +9,7 @@ def generate_diff(fine, coarse):
     - A value of 0 or 1 indicates the correct value in the fine-grained array.
     """
     n = len(fine)
-    diff = fine
+    diff = deepcopy(fine)
     for x in range(n):
         for y in range(n):
             if fine[y][x] == coarse[y][x]:
