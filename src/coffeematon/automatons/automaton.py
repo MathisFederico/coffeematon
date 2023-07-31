@@ -58,7 +58,7 @@ class Automaton:
         self.grainsize = grainsize
         # Set max value for coarse-grained image thresholding
         self.maxval = 1.0
-        self.parameters = (str(self.n), self.initial_state.value, self.NAME)
+        self.parameters = (self.initial_state.value, self.NAME, str(self.n))
         self.save = save
 
     @staticmethod
@@ -89,9 +89,14 @@ class Automaton:
     def timesteps(self):
         """Return the estimated number of steps to convergence for the automaton."""
 
-    def simulate(self) -> Path:
+    def simulate(
+        self, n_steps: Optional[int] = None, max_save_steps: int = 1000
+    ) -> Path:
         """Simulate the automaton until convergence is reached."""
         self.set_initial_state()
+
+        if n_steps is None:
+            n_steps = self.esttime
 
         bitmaps_dir = None
         csv_path = None
@@ -99,12 +104,11 @@ class Automaton:
             bitmaps_dir = self.create_bitmaps_results_folder()
             csv_path = self.create_csv_results_file()
 
-        n_steps = self.esttime
         loadbar = trange(n_steps, total=n_steps, desc="Simulating")
         for step in loadbar:
             self.step = step
-            stepsize = n_steps // 400
-            if (stepsize == 0) or (step % stepsize) == 0:
+            save_stepsize = n_steps // max_save_steps
+            if (save_stepsize == 0) or (step % save_stepsize) == 0:
                 smoothed = smooth(self.cells, self.grainsize)
                 coarse_3 = coarse_grained(smoothed, self.maxval, 3)
                 coarse_7 = coarse_grained(smoothed, self.maxval, 7)
