@@ -10,7 +10,7 @@ from typing import Dict, Optional
 import numpy
 
 
-from coffeematon.automatons.automaton import Automaton, Complexities, InitialStates
+from coffeematon.automatons.automaton import Automaton, ArrayTypes, InitialStates
 from coffeematon.automatons.nonint_automaton import NonInteractingAutomaton
 from coffeematon.automatons.int_automaton import InteractingAutomaton
 from coffeematon.automatons.fluid_automaton import FluidAutomaton
@@ -41,11 +41,11 @@ def experiment_for_n(
 
     # Return statistics
     mix_time = automaton.step
-    emax_val = max(automaton.complexities[Complexities.FINE])
+    emax_val = max(automaton.complexities[ArrayTypes.FINE])
     cmax_time = automaton.steps[
-        numpy.argmax(automaton.complexities[Complexities.COARSE_7])
+        numpy.argmax(automaton.complexities[ArrayTypes.COARSE_7])
     ]
-    cmax_val = max(automaton.complexities[Complexities.COARSE_7])
+    cmax_val = max(automaton.complexities[ArrayTypes.COARSE_7])
     return (mix_time, emax_val, cmax_time, cmax_val)
 
 

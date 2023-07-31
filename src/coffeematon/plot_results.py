@@ -34,10 +34,12 @@ def plot_results(csv_results_path: Path, graph_path: Optional[Path] = None):
     steps = results_data.pop(FIELDS[0])
     complexities = results_data
 
-    initstate, name, n = Automaton.str_to_parameters(csv_results_path.name)
+    initstate, name, n = Automaton.str_to_parameters(
+        csv_results_path.name.removesuffix(".csv")
+    )
 
     plt.figure()
-    plt.title(f"{name} Automaton with initial state {initstate} (n={n})")
+    plt.title(f"{name.capitalize()} Automaton with initial state {initstate} (n={n})")
     plt.xlabel("Time step")
     plt.ylabel("Encoded size (bytes)")
 

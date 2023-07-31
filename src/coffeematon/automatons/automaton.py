@@ -17,7 +17,7 @@ from coffeematon.generate_gifs import generate_gif
 from PIL import Image
 
 
-class Complexities(Enum):
+class ArrayTypes(Enum):
     FINE = "fine"
     COARSE_3 = "coarse_3"
     COARSE_7 = "coarse_7"
@@ -25,6 +25,9 @@ class Complexities(Enum):
     DIFF_3 = "diff_3"
     DIFF_7 = "diff_7"
     DIFF_11 = "diff_11"
+    MASK_3 = "mask_3"
+    MASK_7 = "mask_7"
+    MASK_11 = "mask_11"
     # MDL_COMPLEXITY = "mdlc"
     # MDL_ENTROPY = "mdle"
 
@@ -48,7 +51,7 @@ class Automaton:
         self.cells = np.zeros((n, n))
         self.step = 0
         self.steps = []
-        self.complexities = {complexity: [] for complexity in Complexities}
+        self.complexities = {complexity: [] for complexity in ArrayTypes}
         self.esttime = self.timesteps()
         self.results_dir = Path("data", "results")
         # Compute grain size
@@ -119,13 +122,16 @@ class Automaton:
                 diff11, mask11 = generate_diff(self.cells, coarse_11)
 
                 c_type_to_arr = {
-                    Complexities.FINE: self.cells,
-                    Complexities.COARSE_3: coarse_3,
-                    Complexities.COARSE_7: coarse_7,
-                    Complexities.COARSE_11: coarse_11,
-                    Complexities.DIFF_3: diff3,
-                    Complexities.DIFF_7: diff7,
-                    Complexities.DIFF_11: diff11,
+                    ArrayTypes.FINE: self.cells,
+                    ArrayTypes.COARSE_3: coarse_3,
+                    ArrayTypes.COARSE_7: coarse_7,
+                    ArrayTypes.COARSE_11: coarse_11,
+                    ArrayTypes.DIFF_3: diff3,
+                    ArrayTypes.DIFF_7: diff7,
+                    ArrayTypes.DIFF_11: diff11,
+                    ArrayTypes.MASK_3: mask3,
+                    ArrayTypes.MASK_7: mask7,
+                    ArrayTypes.MASK_11: mask11,
                 }
 
                 self.steps.append(step)
@@ -135,11 +141,12 @@ class Automaton:
                     self.save_images(bitmaps_dir, step, c_type_to_arr)
 
                 # Loadbar display
+                relevant_types = [ArrayTypes.FINE, ArrayTypes.COARSE_3]
                 loadbar.desc = " | ".join(
                     ["Simulating"]
                     + [
-                        f"{c_type.value.capitalize()}: {c_vals[-1]:.2E}"
-                        for c_type, c_vals in self.complexities.items()
+                        f"{c_type.value.capitalize()}: {self.complexities[c_type][-1]:.2E}"
+                        for c_type in relevant_types
                     ]
                 )
                 loadbar.update()
@@ -195,7 +202,7 @@ class Automaton:
             results_writer = DictWriter(results_file, self.results_fields)
             results_writer.writerow(results)
 
-    def compute_complexities(self, c_type_to_arr: Dict[Complexities, np.ndarray]):
+    def compute_complexities(self, c_type_to_arr: Dict[ArrayTypes, np.ndarray]):
         for c_type, arr in c_type_to_arr.items():
             c_val = zip_array(arr)
             self.complexities[c_type].append(c_val)
@@ -208,7 +215,7 @@ class Automaton:
         self,
         bitmaps_dir: Path,
         step: int,
-        c_type_to_arr: Dict[Complexities, np.ndarray],
+        c_type_to_arr: Dict[ArrayTypes, np.ndarray],
     ):
         for c_type, arr in c_type_to_arr.items():
             if arr is None:
