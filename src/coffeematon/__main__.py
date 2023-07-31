@@ -5,14 +5,17 @@ Collecting automaton output
 from time import time
 import argparse
 from typing import Dict, Optional
-import matplotlib.pyplot as plt
+
+
 import numpy
+
 
 from coffeematon.automatons.automaton import Automaton, Complexities, InitialStates
 from coffeematon.automatons.nonint_automaton import NonInteractingAutomaton
 from coffeematon.automatons.int_automaton import InteractingAutomaton
 from coffeematon.automatons.fluid_automaton import FluidAutomaton
-from coffeematon.generate_gifs import generate_gif
+from coffeematon.plot_results import plot_results
+
 
 AUTOMATONS: Dict[str, Automaton] = {
     "nonint": NonInteractingAutomaton,
@@ -21,44 +24,28 @@ AUTOMATONS: Dict[str, Automaton] = {
 }
 
 
-def experiment_for_n(automaton_type: str, n: int, init: Optional[InitialStates] = None):
-    automaton: Automaton = AUTOMATONS.get(automaton_type)(n, init)
+def experiment_for_n(
+    automaton_type: str,
+    n: int,
+    init: Optional[InitialStates] = None,
+    save: bool = True,
+):
+    automaton: Automaton = AUTOMATONS.get(automaton_type)(n, init, save=save)
 
     t_start = time()
-    automaton.simulate()
+    csv_results_path = automaton.simulate()
     t_end = time()
+    print(f"Time for n={automaton.n}: {t_end - t_start:.2E} sec.")
 
-    # Print and save statistics
-    with open(automaton.dir / f"stats_{n}", "w") as stats_file:
-        stats_file.write(f"steps = {automaton.steps}\n")
-        for c_type, c_vals in automaton.complexities.items():
-            stats_file.write(f"{c_type.value.capitalize()} = {c_vals}\n")
-
-    # Generate and save plots
-    plt.figure()
-    plt.title(f"{automaton.NAME} Automaton, n={automaton.n}")
-    plt.xlabel("Time step")
-    plt.ylabel("Encoded size, bytes")
-
-    for c_type, c_vals in automaton.complexities.items():
-        plt.plot(automaton.steps, c_vals, label=c_type.value.capitalize())
-
-    plt.legend()
-    plt.savefig(automaton.dir / "graph")
-    plt.close()
-
-    print("Time for n=%d: %d sec." % (automaton.n, t_end - t_start))
-
-    for gif_type in ["fine", "coarse", "adj_coarse", "diff"]:
-        generate_gif(automaton.dir / "bitmaps" / gif_type)
+    plot_results(csv_results_path)
 
     # Return statistics
     mix_time = automaton.step
-    emax_val = max(automaton.complexities[Complexities.ENTROPY])
+    emax_val = max(automaton.complexities[Complexities.FINE])
     cmax_time = automaton.steps[
-        numpy.argmax(automaton.complexities[Complexities.ADJ_COARSE])
+        numpy.argmax(automaton.complexities[Complexities.COARSE_7])
     ]
-    cmax_val = max(automaton.complexities[Complexities.ADJ_COARSE])
+    cmax_val = max(automaton.complexities[Complexities.COARSE_7])
     return (mix_time, emax_val, cmax_time, cmax_val)
 
 

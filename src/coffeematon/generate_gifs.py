@@ -1,19 +1,22 @@
 import os
 from pathlib import Path
+from typing import Optional
 
 import imageio.v2 as imageio
 import argparse
 
 
-def generate_gif(path: Path):
+def generate_gif(path: Path, gif_path: Optional[Path] = None):
     path = Path(path)
+    if gif_path is None:
+        gif_path = path.parent / f"{path.name}_bitmaps.gif"
+
     bitmaps_steps = [
         int(filename.split(".")[0])
         for filename in os.listdir(path)
         if filename.endswith(".bmp")
     ]
     bitmaps_steps.sort()
-    gif_path = path.parent / f"{path.name}_bitmaps.gif"
     with imageio.get_writer(gif_path, mode="I") as writer:
         for step in bitmaps_steps:
             image = imageio.imread(path / f"{step}.bmp")

@@ -1,5 +1,3 @@
-from pathlib import Path
-
 import random
 
 from coffeematon.automatons.automaton import Automaton, InitialStates

@@ -3,12 +3,9 @@
 
 import gzip
 import bz2
-import tempfile
 from enum import Enum
 from typing import Union
-
-import numpy
-from PIL import Image
+import numpy as np
 
 save_images = True
 
@@ -18,24 +15,25 @@ class Compression(Enum):
     GZIP = "gzip"
 
 
-def zip_array(array, compression: Compression = Compression.GZIP) -> int:
-    return zip_string(write_string(array), compression.value)
+def zip_array(
+    array: np.ndarray, compression: Union[Compression, str] = Compression.GZIP
+) -> int:
+    return zip_bytes(array.tobytes(), compression)
 
 
-def zip_string(string: str, compression: Union[Compression, str]) -> int:
+def zip_string(
+    string: str, compression: Union[Compression, str] = Compression.GZIP
+) -> int:
     byte_string = bytearray(string, "ascii")
+    return zip_bytes(byte_string, compression)
+
+
+def zip_bytes(bytes: bytes, compression: Union[Compression, str]) -> int:
     if Compression(compression) is Compression.GZIP:
-        return len(gzip.compress(byte_string))
+        return len(gzip.compress(bytes))
     if Compression(compression) is Compression.BZIP:
-        return len(bz2.compress(byte_string))
+        return len(bz2.compress(bytes))
 
 
 def write_string(array):
     return " ".join([" ".join([str(x) for x in row]) for row in array])
-
-
-def save_image(array, filename, n):
-    data = numpy.ravel(array)
-    image = Image.new("L", (n, n))
-    image.putdata(data, 255, 0)
-    image.save(filename)

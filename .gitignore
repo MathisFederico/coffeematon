@@ -132,5 +132,5 @@ dmypy.json
 .vscode
 todo
 
-# Experiments
-experiments
+# Data
+data

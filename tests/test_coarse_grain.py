@@ -1,11 +1,11 @@
-from coffeematon.coarse_grain import coarse_grained
+from coffeematon.coarse_grain import coarse_grained, smooth
 
 import numpy as np
 
 
 def np_check_equal(actual: np.ndarray, expected: np.ndarray):
     assert np.all(
-        actual == expected
+        np.isclose(actual, expected)
     ), f"Got:\n{actual}\nDiff:\n{np.abs(actual-expected)}"
 
 
@@ -21,7 +21,8 @@ class TestGrain:
             ],
             dtype=np.float32,
         )
-        coarsed = coarse_grained(fine, maxval=1.0, grainsize=3, n_categories=11)
+        smoothed = smooth(fine, grainsize=3)
+        coarsed = coarse_grained(smoothed, maxval=1.0, n_categories=11)
         expected = np.array(
             [
                 [0.3, 0.4, 0.4, 0.4, 0.7],
@@ -44,12 +45,14 @@ class TestGrain:
             ],
             dtype=np.float32,
         )
-        coarsed = coarse_grained(fine, maxval=1.0, grainsize=3, n_categories=3)
+        smoothed = smooth(fine, grainsize=3)
+        coarsed = coarse_grained(smoothed, maxval=1.0, n_categories=3)
         expected = 0.5 * np.ones_like(fine)
         np_check_equal(coarsed, expected)
 
     def test_grain_3_bins_3_ones(self):
         fine = np.ones((5, 5), dtype=np.float32)
-        coarsed = coarse_grained(fine, maxval=1.0, grainsize=3, n_categories=3)
+        smoothed = smooth(fine, grainsize=3)
+        coarsed = coarse_grained(smoothed, maxval=1.0, n_categories=3)
         expected = np.ones((5, 5), dtype=np.float32)
         np_check_equal(coarsed, expected)

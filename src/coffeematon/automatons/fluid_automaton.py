@@ -1,7 +1,16 @@
-from pathlib import Path
-
 import numpy as np
-from phi.flow import *
+from phi.flow import (
+    advect,
+    fluid,
+    Solve,
+    CenteredGrid,
+    extrapolation,
+    StaggeredGrid,
+    Box,
+    tensor,
+    channel,
+    Sphere,
+)
 
 from coffeematon.automatons.automaton import Automaton, InitialStates
 
@@ -61,4 +70,4 @@ class FluidAutomaton(Automaton):
         self._smoke_to_cells()
 
     def timesteps(self):
-        return 5 * self.n
+        return max(5 * self.n, 100)

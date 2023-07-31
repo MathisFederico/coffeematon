@@ -1,5 +1,3 @@
-from pathlib import Path
-
 import numpy as np
 import random
 
@@ -9,8 +7,8 @@ from coffeematon.automatons.automaton import Automaton, InitialStates
 class NonInteractingAutomaton(Automaton):
     NAME = "Non-Interacting"
 
-    def __init__(self, n, initial_state):
-        Automaton.__init__(self, n, initial_state)
+    def __init__(self, *args, **kwargs):
+        Automaton.__init__(self, *args, **kwargs)
         self.maxval = self.grainsize
 
     def next(self):

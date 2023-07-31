@@ -1,25 +1,33 @@
-from coffeematon.__main__ import experiment_for_n
+from coffeematon.automatons.fluid_automaton import FluidAutomaton
+from coffeematon.automatons.int_automaton import InteractingAutomaton
+from coffeematon.automatons.nonint_automaton import NonInteractingAutomaton
 
 
 def test_int():
-    experiment_for_n("int", 10)
+    automaton = InteractingAutomaton(10, save=False)
+    automaton.simulate()
 
 
 def test_nonint():
-    experiment_for_n("nonint", 10)
+    automaton = NonInteractingAutomaton(10, save=False)
+    automaton.simulate()
 
 
 def test_fluid():
-    experiment_for_n("fluid", 10)
+    automaton = FluidAutomaton(10, save=False)
+    automaton.simulate()
 
 
 def test_int_circular():
-    experiment_for_n("int", 10, init="circular")
+    automaton = InteractingAutomaton(10, initial_state="circular", save=False)
+    automaton.simulate()
 
 
 def test_nonint_circular():
-    experiment_for_n("nonint", 10, init="circular")
+    automaton = NonInteractingAutomaton(10, initial_state="circular", save=False)
+    automaton.simulate()
 
 
 def test_fluid_circular():
-    experiment_for_n("fluid", 10, init="circular")
+    automaton = FluidAutomaton(10, initial_state="circular", save=False)
+    automaton.simulate()
