@@ -142,13 +142,11 @@ class Automaton:
 
                 # Loadbar display
                 relevant_types = [ArrayTypes.FINE, ArrayTypes.COARSE_3]
-                loadbar.desc = " | ".join(
-                    ["Simulating"]
-                    + [
-                        f"{c_type.value.capitalize()}: {self.complexities[c_type][-1]:.2E}"
-                        for c_type in relevant_types
-                    ]
-                )
+                relevant_params = [
+                    f"{c_type.value.capitalize()}: {self.complexities[c_type][-1]:.2E}"
+                    for c_type in relevant_types
+                ]
+                loadbar.desc = " | ".join(["Simulating"] + relevant_params)
                 loadbar.update()
             self.next()
 

@@ -35,6 +35,6 @@ class InteractingAutomaton(Automaton):
 
     def timesteps(self):
         if self.initial_state is InitialStates.UPDOWN:
-            return 4000 * (self.n**2)
+            return 6000 * (self.n**2)
         if self.initial_state is InitialStates.CIRCULAR:
-            return 4000 * (self.n**2)
+            return 6000 * (self.n**2)
