@@ -74,7 +74,7 @@ class Automaton:
 
     def set_initial_state(self):
         if self.initial_state is InitialStates.UPDOWN:
-            self.cells[: self.n // 2, : self.n] = self.maxval
+            self.cells[: self.n // 2, : self.n] = 1.0
         elif self.initial_state is InitialStates.CIRCULAR:
             for x in range(self.n):
                 for y in range(self.n):
@@ -82,7 +82,7 @@ class Automaton:
                         np.sqrt((x - self.n / 2) ** 2 + (y - self.n / 2) ** 2)
                         < self.n / 4
                     ):
-                        self.cells[x, y] = self.maxval
+                        self.cells[x, y] = 1.0
 
     @abstractmethod
     def next(self):

@@ -36,6 +36,6 @@ class NonInteractingAutomaton(Automaton):
 
     def timesteps(self):
         if self.initial_state is InitialStates.UPDOWN:
-            return 50 * self.n
+            return 100 * self.n
         if self.initial_state is InitialStates.CIRCULAR:
-            return 50 * self.n
+            return 100 * self.n
