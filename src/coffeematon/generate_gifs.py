@@ -17,7 +17,7 @@ def generate_gif(path: Path, gif_path: Optional[Path] = None):
         if filename.endswith(".bmp")
     ]
     bitmaps_steps.sort()
-    with imageio.get_writer(gif_path, mode="I") as writer:
+    with imageio.get_writer(gif_path, mode="I", loop=0) as writer:
         for step in bitmaps_steps:
             image = imageio.imread(path / f"{step}.bmp")
             writer.append_data(image)
