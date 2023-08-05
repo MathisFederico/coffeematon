@@ -4,12 +4,17 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 from csv import DictReader
 
-from typing import Optional, Dict
+from typing import Optional, Dict, List
 
 from coffeematon.automatons.automaton import Automaton
 
 
-def plot_results(csv_results_path: Path, graph_path: Optional[Path] = None):
+def plot_results(
+    csv_results_path: Path,
+    graph_path: Optional[Path] = None,
+    choosen_complexites: Optional[List[str]] = None,
+    linscale: bool = False,
+):
     csv_results_path = Path(csv_results_path)
     if graph_path is None:
         graph_path = (
@@ -33,6 +38,10 @@ def plot_results(csv_results_path: Path, graph_path: Optional[Path] = None):
 
     steps = results_data.pop(FIELDS[0])
     complexities = results_data
+    if choosen_complexites is not None:
+        complexities = {
+            k: v for k, v in complexities.items() if k.lower() in choosen_complexites
+        }
 
     initstate, name, n = Automaton.str_to_parameters(
         csv_results_path.name.removesuffix(".csv")
@@ -47,7 +56,8 @@ def plot_results(csv_results_path: Path, graph_path: Optional[Path] = None):
         plt.plot(steps, c_vals, label=c_type)
 
     plt.legend()
-    plt.loglog()
+    if not linscale:
+        plt.loglog()
     plt.savefig(graph_path)
     plt.close()
 
@@ -58,5 +68,17 @@ if __name__ == "__main__":
     parser.add_argument(
         "-o", "--save", help="Path where to save the plot.", default=None
     )
+    parser.add_argument(
+        "-c",
+        "--complexities",
+        help="Complexities to plot.",
+        default=None,
+        nargs="*",
+    )
+    parser.add_argument(
+        "--linscale",
+        help="Set to linear scale instead of default loglog scale.",
+        action="store_true",
+    )
     args = parser.parse_args()
-    plot_results(args.csv_path, args.save)
+    plot_results(args.csv_path, args.save, args.complexities, args.linscale)
